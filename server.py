@@ -38,21 +38,30 @@ def accept_connection():
     print("connecting")
     connection,address=s.accept()
     print(f"Connected to IP {address[0]} port {str(address[1])}")
+    connection.send(str.encode("Connection Established"))
     #write the function that will do actions here
     actions(connection)
     connection.close()
 
 def actions(connection):
     while True:
-        message=input("For the time to prevent this looping over and over again: ")
+        message=input("Your message: ")
         if message=="quit":
+            connection.send(str.encode(message))
+            #clnt_response= str(connection.recv(1024), "utf-8")
             print("Closing the connection")
             connection.close()
             s.close()
-        if len(str.encode(message))>0:
+            break
+        elif len(str.encode(message))>0:
             connection.send(str.encode(message))
-            clnt_response=str(connection.recv(1024),"utf8")
+            clnt_response=str(connection.recv(1024),"utf-8")
             print(clnt_response)
+            if clnt_response=="quit":
+                print("Closing the connection")
+                connection.close()
+                s.close()
+                break
 
 def main():
     create_socket()
